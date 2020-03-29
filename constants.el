@@ -4,6 +4,7 @@
 ;; Author: Carsten Dominik <carsten.dominik@gmail.com>
 ;; Version: 2.7
 ;; Keywords: programming, languages
+;; URL: https://github.com/cdominik/constants-for-Emacs
 
 ;; This file is not part of GNU Emacs.
 
