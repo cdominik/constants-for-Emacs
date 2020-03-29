@@ -1,4 +1,4 @@
-; Commentary:
+Commentary:
 
 When I write small programs to calculate something, I often need
 the values of some physical constants and units.  I could of course
@@ -209,4 +209,4 @@ TO DO
 - add a command to get info about a certain variable.  Only useful if
   the variable name really is the constant name.  Not sure if this will
   be used at all, so until someones asks for it, this will not be done.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
