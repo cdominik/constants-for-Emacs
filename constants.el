@@ -199,7 +199,7 @@
 ;;
 ;; Thanks to the following people for reporting bugs and/or suggesting
 ;; features/constants/languages:
-;; Bruce Ignalis, Dave Pearson, Jacques L'helgoualc'h
+;; Bruce Ignalis, Dave Pearson, Jacques L'helgoualc'h, Federico Beffa
 ;;
 ;; CHANGES
 ;; -------
