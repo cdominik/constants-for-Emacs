@@ -697,7 +697,7 @@ The value of this variable must be a function which returns a list
 
 (defvar constants-major-mode)
 
-(eval-when-compile (defvar ctable))
+(eval-when-compile (defvar constants-ctable))
 
 (defun constants-is-lisp-like (mode)
   (save-match-data
@@ -757,11 +757,11 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
                 (t constants-unit-system)))
          (all-constants (append constants-user-defined constants-defaults))
 	 (atable (append constants-rename all-constants))
-         (ctable (constants-make-completion-table constants-rename
+         (constants-ctable (constants-make-completion-table constants-rename
                                                   all-constants))
          (constants-major-mode major-mode)
 	 (req1 (or names
-                   (constants-completing-read "Name1[,name2...]: " ctable)))
+                   (constants-completing-read "Name1[,name2...]: " constants-ctable)))
          (req (if (string= "" req1) constants-default-list req1))
 	 (clist (split-string req "[ ,]+"))
          (mode major-mode)
@@ -919,12 +919,12 @@ bahavior also in a programmatic call."
 	 (all-constants (append constants-user-defined constants-defaults))
          (atable (append constants-rename all-constants))
          entry prefix prefix-name pmatch unit factor value ok)
-    (if (interactive-p)
+    (if (called-interactively-p 'interactive)
         ;; Read a constant name
-        (let* ((ctable (constants-make-completion-table constants-rename
+        (let* ((constants-ctable (constants-make-completion-table constants-rename
                                                         all-constants))
                (constants-major-mode major-mode)
-               (req1 (constants-completing-read "Constant: " ctable)))
+               (req1 (constants-completing-read "Constant: " constants-ctable)))
           (setq const req1))
       (or const 
           (error "Non-interactive use must supply the name of a constant")))
@@ -962,8 +962,9 @@ bahavior also in a programmatic call."
               (if (string-match "0+[eE]" value)
                   (setq value (replace-match "e" t t value)))))))
     (if (not ok)
-        (and (interactive-p) (error "No such constant: %s" const))
-      (if (or (interactive-p) message)
+        (and (called-interactively-p 'interactive)
+             (error "No such constant: %s" const))
+      (if (or (called-interactively-p 'interactive) message)
           (progn
             (kill-new value)
             (message "Value of `%s'%s is %s %s"
@@ -1095,16 +1096,16 @@ and follow it up."
     (cond
      ((eq flag nil)
       ;; try completion
-      (setq rtn (try-completion s2 ctable))
+      (setq rtn (try-completion s2 constants-ctable))
       (if (stringp rtn) (concat s1 s2 (substring rtn (length s2))))
       )
      ((eq flag t)
       ;; all-completions
-      (all-completions s2 ctable)
+      (all-completions s2 constants-ctable)
       )
      ((eq flag 'lambda)
       ;; exact match?
-      (assoc s2 ctable)))
+      (assoc s2 constants-ctable)))
     ))
 
 ;;;###autoload
@@ -1161,14 +1162,14 @@ Description                    Short      Long name       Value [%s]
                        (nth 0 entry) (nth 2 entry) (nth 1 entry)))))
     (let* ((all-constants (append constants-user-defined constants-defaults))
            (atable (append constants-rename all-constants))
-           (ctable (constants-make-completion-table constants-rename
+           (constants-ctable (constants-make-completion-table constants-rename
                                                     all-constants))
            const c1ass c1)
       (princ "
 The following ambiguities are resolved by ignoring the unit prefix
 ------------------------------------------------------------------
 ")
-      (while (setq const (car (pop ctable)))
+      (while (setq const (car (pop constants-ctable)))
         (if (and (assoc (string-to-char const) constants-prefixes)
                  (> (length const) 1)
                  (setq c1 (downcase (substring const 1)))
