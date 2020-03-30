@@ -1,5 +1,5 @@
 ;;; constants.el --- enter definition of constants into source code
-;; Copyright (c) 2003, 2004, 2005, 2011, 2013 Carsten Dominik
+;; Copyright (c) 2003, 2004, 2005, 2011, 2013, 2020 Carsten Dominik
 
 ;; Author: Carsten Dominik <carsten.dominik@gmail.com>
 ;; Version: 2.7
@@ -173,7 +173,7 @@
 ;;   complete "MGa" to "MGauss" (meaning "Mega-Gauss").  This was not
 ;;   implemented because it would cause too many matches during
 ;;   completion.  But you can still use completion for this by separating
-;;   the prefix from the unit with a star:  After typing "M*Ga", completion 
+;;   the prefix from the unit with a star:  After typing "M*Ga", completion
 ;;   will work and result in "M*Gauss".  Both "MGauss" and "M*Gauss" will
 ;;   result in a variable "MGauss" being defined.
 ;; - When using cgs units, be very careful with the electric constants
@@ -208,7 +208,7 @@
 ;; - Add support for Python
 ;;
 ;; Version 2.5
-;; - Better lisp indentation (patch by Federico Beffa <beffa@ieee.org>)
+;; - Better Lisp indentation (patch by Federico Beffa <beffa@ieee.org>)
 ;;
 ;; Version 2.3
 ;; - Add a few more constants
@@ -230,7 +230,7 @@
 ;; - Add expression values tcl and others.
 ;; - Add calc mode?
 ;; - add these units?
-;;   - g[u]age, 
+;;   - g[u]age,
 ;;   - (circular) mill
 ;;   - ampere-turn
 ;; - add a command to get info about a certain variable.  Only useful if
@@ -239,7 +239,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 
-(defgroup constants nil 
+;;; Code:
+
+(defgroup constants nil
   "Customization group for inserting constants into programs."
   :tag "Constants"
   :prefix "constants-"
@@ -259,7 +261,7 @@ Legal values are `cgs' and `SI'."
     ("hh" . "h") ("hp" . "h")
     ("GG" . "G") ("gr" . "g")
     )
-  "Alist with additional names for some existing constants.  
+  "Alist with additional names for some existing constants.
 Sometime it is better in a program to use different names for
 constants, for exapmle \"cc\" instead of \"c\" for the speed of light,
 in order be able to use single letter variables for other purposes.
@@ -303,7 +305,7 @@ are used.  Again, `constants-defaults' contains examples."
 	   (string :tag "Description")
 	   (string :tag "SI  value")
 	   (string :tag "cgs value")
-           (repeat 
+           (repeat
             :inline t
             (list (symbol :tag "mode")
                   (string :tag "SI  value")
@@ -324,7 +326,7 @@ are used.  Again, `constants-defaults' contains examples."
     (python-mode "%n = %v%t# %d %u" "e" "%p*%v" nil)
     (idlwave-mode "%n = %v%t;; %d %u" "d" "%p*%v" nil)
     (text-mode    "%n = %v%t(%d %u)" "d" "%p*%v" nil)
-    (idlwave-shell-mode "%n = %v%t;; %d %u" "d" "%p*%v" 
+    (idlwave-shell-mode "%n = %v%t;; %d %u" "d" "%p*%v"
                         idlwave-shell-send-command)
     (matlab-mode "%n = %v%t% %d %u" "e" "%p*%v" nil)
     (octave-mode "%n = %v%t# %d %u" "e" "%p*%v" nil)
@@ -336,7 +338,7 @@ are used.  Again, `constants-defaults' contains examples."
     (gp-script-mode "%n = %v; /* %d %u */" "e" "%p*%v" nil)
     (t "%n = %v%t; %d %u" "e" "%p*%v" nil))
     "Format descriptions for different major modes.
-This is an alist with major mode symbols as keys.  If a key is `t', that
+This is an alist with major mode symbols as keys.  If a key is t, that
 entry specifies a default format.  The second item is the format string
 to insert for each constant.  In the format, several %-escapes
 have special meaning:
@@ -430,11 +432,11 @@ This is mainly useful for modes which have several incarnations, like
     "Length units"
 
     ("meter"         "m"      "Meter"                  "1.0e0 [m]"           "1.0e2 [cm]")
-    ;; 1 lyr = c * 365.2425 *24*60^2 
+    ;; 1 lyr = c * 365.2425 *24*60^2
     ("Angstroem"     "Ang"    "Angstroem"              "1e-10 [m]"           "1e-8 [cm]")
     ("micron"        "mum"    "Micrometer"             "1e-6 [m]"            "1e-4 [cm]")
     ;; Just a few more commonly used english units - completeness is not attempted
-    ("inch"          "in"     "Inch"                   "2.54e-2 [m]"         "2.54e0 [cm]") 
+    ("inch"          "in"     "Inch"                   "2.54e-2 [m]"         "2.54e0 [cm]")
     ("foot"          "ft"     "Foot"                   "3.048e-1 [m]"        "3.048e1 [cm]")
     ("yard"          "yd"     "Yard"                   "9.144e-1 [m]"        "9.144e1 [cm]")
     ("mile"          "mi"     "Mile"                   "1.609344e3 [m]"      "1.609344e5 [cm]")
@@ -539,14 +541,14 @@ This is mainly useful for modes which have several incarnations, like
     "Amount of matter units"
     ("Mol"           "Mol"    "Mol (SI base unit)"     "1.0e0 [mol]"         "1.0e0 [mol]")
 
-    "Friction units" 
+    "Friction units"
 
     ("Poise"         "Poi"    "Poise"                  "1.0e-1 [kg/m s]"     "1.0e0 [g/cm s]")
     ("Stokes"        "St"     "Stokes"                 "1.0e-4 [m^2/s]"      "1.0e0 [cm^2/s]")
 
     "Electrical units" ;; FIXME; I am not sure if the cgs versions are right.
 
-    ;; Note: units refer to esu, not emu units.... 
+    ;; Note: units refer to esu, not emu units....
     ("Ampere"        "Amp"    "Ampere"                 "1.0e0 [A]"           "2.99792458e9 [?]")
     ("Coulomb"       "C"      "Coulomb"                "1.0e0 [C]"           "2.99792458e9 [?]")
     ("Faraday"       "Fdy"    "Faraday"                "9.6485341472e4 [C]"  "2.892555240e14 [?]")
@@ -655,12 +657,11 @@ This is mainly useful for modes which have several incarnations, like
     ("mPlanckBar"    "mplb"   "Planck mass (hbar)"      "2.17671e-8 [kg]"     "2.17671e-5 [g]")
     ("tPlanckBar"    "tplb"   "Planck time (hbar)"      "5.39056e-44 [s]"     "5.39056e-44 [s]")
     )
-  "Built-in constants and units")
+  "Built-in constants and units.")
 
 (defcustom constants-allow-prefixes t
-  "Non-nil means, non-matching names are tried again with the first character
-interpreted as unit prefix.  See `constants-prefixes' for a list of allowed
-prefiexes."
+  "Non-nil means, non-matching names are checked to have unit prefixes.
+See `constants-prefixes' for a list of allowed prefixes."
   :group 'constants
   :type 'boolean)
 
@@ -681,7 +682,7 @@ prefiexes."
     (?p "1e-12" "Pico")
     (?f "1e-15" "Femto")
     (?a "1e-18" "Atto"))
-  "Allowed prefixes for constants and units"
+  "Allowed prefixes for constants and units."
   :group 'constants
   :type  '(repeat
            (list (character :tag "Prefix char")
@@ -700,10 +701,12 @@ The value of this variable must be a function which returns a list
 (eval-when-compile (defvar constants-ctable))
 
 (defun constants-is-lisp-like (mode)
+  "Is MODE a lisp-like mode?"
   (save-match-data
     (string-match "\\(lisp\\|scheme\\)" (symbol-name mode))))
 
 (defun constants-is-set-like ()
+  "Is this a setq-like form?"
   (save-excursion
     (condition-case nil
         (save-match-data
@@ -744,7 +747,7 @@ When called with prefix argument UNIT-SYSTEM, the \"other\" unit
 system will be used.  I.e., if your default is `SI', then a prefix arg
 will switch to `cgs' and vice versa.
 
-`constants-insert' may also be called from a lisp program - in this
+`constants-insert' may also be called from a Lisp program - in this
 case the comma-separated list of names should be given as argument
 NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
 `cgs' may be specified directly.  For example
@@ -822,7 +825,7 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
             ;; Implement prefix directly in the number
             ;; We need to hack around accuracy problems here.
             (if (string-match "\\([eEdD]\\)\\([-+]?[0-9]+\\)" value)
-                (setq value (replace-match (concat "\\1" 
+                (setq value (replace-match (concat "\\1"
                    (format "%d" (floor
                     (+ 0.1 (string-to-number (match-string 2 value))
                        (log (string-to-number factor) 10.))))) nil nil value))
@@ -838,7 +841,7 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
                (string-match "%p" prefix-exp)     ; prefix format is there
                prefix
                (string-match "%v" ins))
-          (setq ins (replace-match prefix-exp t t ins)))                             
+          (setq ins (replace-match prefix-exp t t ins)))
       (while (string-match "%p" ins)
 	(setq ins (replace-match factor t t ins)))
       (while (string-match "%v" ins)
@@ -851,7 +854,7 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
       (while (string-match "%n" ins)
 	(setq ins (replace-match (or vname const) t t ins)))
       (while (string-match "%d" ins)
-	(setq ins (replace-match 
+	(setq ins (replace-match
                    (if prefix (concat prefix-name "-" desc) desc)
                    t t ins)))
       (while (string-match "%u" ins)
@@ -862,7 +865,7 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
           ;; Special treatment!
           (progn
             (while (string-match "%t" ins)
-              (setq ins (replace-match 
+              (setq ins (replace-match
                          (make-string (max 2 (- 38 (match-beginning 0))) ?\ )
                          t t ins)))
             (funcall process-func ins))
@@ -872,8 +875,8 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
                   "\\S-" (buffer-substring (point-at-bol) (point-at-eol)))
                  (not (constants-is-lisp-like mode)))
             ;; non-empty line, insert after this line
-            (progn 
-              (end-of-line 1) 
+            (progn
+              (end-of-line 1)
               (if constants-indent-code (newline-and-indent) (newline)))
           ;; Empty line, simply insert into this line
           (if constants-indent-code
@@ -926,7 +929,7 @@ bahavior also in a programmatic call."
                (constants-major-mode major-mode)
                (req1 (constants-completing-read "Constant: " constants-ctable)))
           (setq const req1))
-      (or const 
+      (or const
           (error "Non-interactive use must supply the name of a constant")))
     (setq entry (constants-assoc const atable 'follow)
           pmatch (assoc (string-to-char const) constants-prefixes))
@@ -952,7 +955,7 @@ bahavior also in a programmatic call."
             ;; Implement prefix directly in the number
             ;; We need to hack around accuracy problems here.
             (if (string-match "\\([eEdD]\\)\\([-+]?[0-9]+\\)" value)
-                (setq value (replace-match (concat "\\1" 
+                (setq value (replace-match (concat "\\1"
                    (format "%d" (floor
                     (+ 0.1 (string-to-number (match-string 2 value))
                        (log (string-to-number factor) 10.))))) nil nil value))
@@ -969,7 +972,7 @@ bahavior also in a programmatic call."
             (kill-new value)
             (message "Value of `%s'%s is %s %s"
                      const
-                     (if prefix (concat " (=" prefix-name "-" 
+                     (if prefix (concat " (=" prefix-name "-"
                                         (substring const 1) ")") "")
                      value
                      (if (and unit (string-match "\\S-" unit))
@@ -992,13 +995,13 @@ For example \"pi\" would be replaced by \"3.1415926535897932385\"."
         (error "No such constant: %s" (match-string 0))))))
 
 (defun constants-get-value (entry mode)
-  "Extract the correct value string from the entry."
+  "Extract the correct value string from the ENTRY for mode MODE."
   (let (ee val)
     (if (and mode (setq ee (assq mode entry)))
         (if (or (eq (nth 1 ee) 'default)
                 (equal (nth 1 ee) ""))
             (setq ee (assq 'default entry))))
-    (setq val 
+    (setq val
           (if ee
               (cond ((eq constants-unit-system 'SI) (nth 1 ee))
                     ((eq constants-unit-system 'cgs) (or (nth 2 ee) (nth 1 ee)))
@@ -1011,7 +1014,7 @@ For example \"pi\" would be replaced by \"3.1415926535897932385\"."
       val)))
 
 (defun constants-get-unit (entry &optional mode)
-  "Extract the unit string from the entry.  MODE will be ignored."
+  "Extract the unit string from the ENTRY.  MODE will be ignored."
   (let ((val (cond ((eq constants-unit-system 'SI) (nth 3 entry))
                    ((eq constants-unit-system 'cgs) (nth 4 entry))
                    (t nil))))
@@ -1020,7 +1023,7 @@ For example \"pi\" would be replaced by \"3.1415926535897932385\"."
       "")))
 
 (defun constants-assoc (key table &optional follow)
-  "Case-insensitive assoc on first and second list element.
+  "Case-insensitive assoc on first and second list element, using KEY and TABLE.
 When FOLLOW is non-nil, check if the match is a rename cell
 and follow it up."
   (catch 'exit
@@ -1037,12 +1040,12 @@ and follow it up."
       nil)))
 
 (defun constants-completing-read (&rest args)
-  "Completing read, case insensitive."
+  "Completing read, case insensitive, passing ARGS to `completing-read'."
   (let ((old-value (default-value 'completion-ignore-case))
-        (minibuffer-local-completion-map 
+        (minibuffer-local-completion-map
          (copy-keymap minibuffer-local-completion-map)))
-    (define-key minibuffer-local-completion-map "?" 
-      (lambda () 
+    (define-key minibuffer-local-completion-map "?"
+      (lambda ()
         (interactive)
         (let ((major-mode constants-major-mode))
           (constants-help nil 'completing))))
@@ -1056,6 +1059,7 @@ and follow it up."
       (setq-default completion-ignore-case old-value))))
 
 (defun constants-scroll-help ()
+  "Scroll the help window."
   (interactive)
   (let ((cw (selected-window))
         (hw (get-buffer-window "*Help*")))
@@ -1068,8 +1072,8 @@ and follow it up."
           (select-window cw)))))
 
 (defun constants-make-completion-table (varnames constants)
-  "Make completion table containing all allowed names."
-  (let ((all 
+  "Make completion table containing all allowed VARNAMES in CONSTANTS."
+  (let ((all
          (delq nil
                (append
                 (mapcar 'car varnames)
@@ -1092,7 +1096,7 @@ and follow it up."
     (if (string-match "^\\(.*[*,=]\\)\\([^*,]*\\)$" string)
         (setq s1 (match-string 1 string)
               s2 (match-string 2 string))
-      (setq s1 "" s2 string)) 
+      (setq s1 "" s2 string))
     (cond
      ((eq flag nil)
       ;; try completion
@@ -1114,7 +1118,7 @@ and follow it up."
 The values are for the currently selected unit system.  When called
 with prefix argument UNIT-SYSTEM, the \"other\" unit system will be
 used.  I.e., if your default is `SI', then a prefix arg will switch to
-`cgs' and vice versa."
+`cgs' and vice versa.  If COMPLETING is non-lil, use completion."
 
   (interactive "P")
   (with-output-to-temp-buffer "*Help*"
@@ -1137,7 +1141,7 @@ used.  I.e., if your default is `SI', then a prefix arg will switch to
 "            List of constants: %s
 Description                    Short      Long name       Value [%s]
 -------------------------------------------------------------------------------
-" 
+"
 (if completing "Use Shift-<TAB> to scroll" "") us))
       (while (setq entry (pop all))
         (if (stringp entry)
@@ -1175,7 +1179,7 @@ The following ambiguities are resolved by ignoring the unit prefix
                  (setq c1 (downcase (substring const 1)))
                  (setq c1ass (constants-assoc c1 atable 'follow)))
             (princ (format "%-15s refers to %-15s and not to %s-%s\n"
-                           const 
+                           const
                            (car (constants-assoc const atable))
                            (nth 2 (assoc (string-to-char const) constants-prefixes))
                            (if (or t (string= c1 (downcase (car c1ass))))
