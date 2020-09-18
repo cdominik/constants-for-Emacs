@@ -332,7 +332,7 @@ are used.  Again, `constants-defaults' contains examples."
     (octave-mode "%n = %v%t# %d %u" "e" "%p*%v" nil)
     (perl-mode  "$%n = %v;%t# %d %u" "e" "%p*%v" nil)
     (cperl-mode . perl-mode)
-    (emacs-lisp-mode "(%n %v)%t; %d %u" "d" "(* %p %v)" nil) ; for a let form
+    (emacs-lisp-mode "(%n %v)%t; %d %u" "e" "(* %p %v)" nil) ; for a let form
     (lisp-interaction-mode . emacs-lisp-mode)
     (gp-mode "%n = %v /* %d %u */" "e" "%p*%v" nil)
     (gp-script-mode "%n = %v; /* %d %u */" "e" "%p*%v" nil)
