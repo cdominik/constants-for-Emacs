@@ -146,7 +146,7 @@ BUGS
   complete "MGa" to "MGauss" (meaning "Mega-Gauss").  This was not
   implemented because it would cause too many matches during
   completion.  But you can still use completion for this by separating
-  the prefix from the unit with a star:  After typing "M*Ga", completion 
+  the prefix from the unit with a star:  After typing "M*Ga", completion
   will work and result in "M*Gauss".  Both "MGauss" and "M*Gauss" will
   result in a variable "MGauss" being defined.
 - When using cgs units, be very careful with the electric constants
@@ -181,7 +181,7 @@ Version 2.7
 - Add support for Python
 
 Version 2.5
-- Better lisp indentation (patch by Federico Beffa <beffa@ieee.org>)
+- Better Lisp indentation (patch by Federico Beffa <beffa@ieee.org>)
 
 Version 2.3
 - Add a few more constants
@@ -203,7 +203,7 @@ TO DO
 - Add expression values tcl and others.
 - Add calc mode?
 - add these units?
-  - g[u]age, 
+  - g[u]age,
   - (circular) mill
   - ampere-turn
 - add a command to get info about a certain variable.  Only useful if
