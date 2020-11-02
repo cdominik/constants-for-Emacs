@@ -259,7 +259,7 @@ Legal values are `cgs' and `SI'."
   '(("kk" . "k") ("bk" . "k")
     ("cc" . "c") ("cl" . "c")
     ("hh" . "h") ("hp" . "h")
-    ("GG" . "G") ("gr" . "g")
+    ("GG" . "Grav") ("gr" . "g")
     )
   "Alist with additional names for some existing constants.
 Sometime it is better in a program to use different names for
