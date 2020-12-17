@@ -2,7 +2,7 @@
 ;; Copyright (c) 2003, 2004, 2005, 2011, 2013, 2020 Carsten Dominik
 
 ;; Author: Carsten Dominik <carsten.dominik@gmail.com>
-;; Version: 2.7
+;; Version: 2.8
 ;; Keywords: programming, languages
 ;; URL: https://github.com/cdominik/constants-for-Emacs
 
@@ -110,6 +110,10 @@
 ;; list of all available constants.  You can scroll the Help window
 ;; with S-TAB while entering text in the minibuffer.
 ;;
+;; If you add "si" or "cgs" to the comma-separated list of
+;; constant/unit names, this will switch the unit system for the
+;; burrent buffer and editing session.
+;;
 ;;
 ;; CUSTOMIZATION
 ;; -------------
@@ -204,6 +208,11 @@
 ;;
 ;; CHANGES
 ;; -------
+;; Version 2.8
+;; - Allow the interactive prompt to change the unit system.  That
+;;   change will be stored locally for the current buffer and editing
+;;   session.
+;;
 ;; Version 2.7
 ;; - Add support for Python
 ;;
@@ -254,6 +263,9 @@ Legal values are `cgs' and `SI'."
   :type '(choice
 	  (const cgs)
 	  (const SI)))
+
+(defvar constants-unit-system-override nil)
+(make-variable-buffer-local 'constants-unit-system-override)
 
 (defcustom constants-rename
   '(("kk" . "k") ("bk" . "k")
@@ -747,6 +759,11 @@ When called with prefix argument UNIT-SYSTEM, the \"other\" unit
 system will be used.  I.e., if your default is `SI', then a prefix arg
 will switch to `cgs' and vice versa.
 
+You can also make \"si\" or \"cgs\" one of the members of the
+comma-separated list in NAMES. This will then set a local
+variable to select that unit system for the current buffer for
+the current editing session.
+
 `constants-insert' may also be called from a Lisp program - in this
 case the comma-separated list of names should be given as argument
 NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
@@ -756,6 +773,7 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
   (interactive "P")
   (let* ((constants-unit-system
           (cond ((and unit-system (symbolp unit-system)) unit-system)
+                (constants-unit-system-override constants-unit-system-override)
                 (unit-system (if (eq constants-unit-system 'SI) 'cgs 'SI))
                 (t constants-unit-system)))
          (all-constants (append constants-user-defined constants-defaults))
@@ -773,7 +791,7 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
                           (funcall constants-language-function))
                      (assq mode constants-languages)
                      (assq t constants-languages)))
-	 format exp-string
+	 format exp-string unit-system
          pmatch factor name prefix-name rpl prefix-exp force-prefix process-func
 	 const prefix entry entry1 desc value ins beg linelist line vname)
         ;; Check for fentry aliasing
@@ -788,6 +806,14 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
     ;; extract format specifications
     (setq format (nth 1 fentry) exp-string (nth 2 fentry)
           prefix-exp (nth 3 fentry) process-func (nth 4 fentry))
+                                        ; Let's see if the unit system is specifid in this string
+    (while (setq unit-system (or (member "si" clist) (member "cgs" clist)
+                                 (member "SI" clist) (member "CGS" clist)))
+      (setq unit-system (car unit-system))
+      (constants-set-unit-system unit-system)
+      (message "Setting unit system to %s" unit-system)
+      (setq clist (delete unit-system clist)))
+    ; Now process the list of units given
     (while (setq const (pop clist))
       (setq prefix nil factor nil prefix-name "" force-prefix nil vname nil)
       (if (string-match "\\(.*\\)=\\(.*\\)" const)
@@ -918,7 +944,7 @@ bahavior also in a programmatic call."
 ;; FIXME: There is a lot of code duplication with constants-insert here,
 ;;        maybe we should restructure this at some point.  For now, it works.
   (interactive)
-  (let* ((constants-unit-system (or unit-system constants-unit-system))
+  (let* ((constants-unit-system (or unit-system constants-unit-system-override constants-unit-system))
 	 (all-constants (append constants-user-defined constants-defaults))
          (atable (append constants-rename all-constants))
          entry prefix prefix-name pmatch unit factor value ok)
@@ -994,6 +1020,14 @@ For example \"pi\" would be replaced by \"3.1415926535897932385\"."
            (replace-match value t t)
         (error "No such constant: %s" (match-string 0))))))
 
+(defun constants-set-unit-system (system)
+  "Set unit system and make sure it persists in this buffer."
+  (if (equal (downcase system) "cgs")
+      (setq constants-unit-system 'cgs
+            constants-unit-system-override 'cgs)
+    (setq constants-unit-system 'SI
+          constants-unit-system-override 'SI)))
+
 (defun constants-get-value (entry mode)
   "Extract the correct value string from the ENTRY for mode MODE."
   (let (ee val)
@@ -1048,7 +1082,7 @@ and follow it up."
       (lambda ()
         (interactive)
         (let ((major-mode constants-major-mode))
-          (constants-help nil 'completing))))
+          (constants-help constants-unit-system 'completing))))
     (define-key minibuffer-local-completion-map [(shift tab)] 'constants-scroll-help)
     (unwind-protect
 	(progn
@@ -1125,6 +1159,7 @@ used.  I.e., if your default is `SI', then a prefix arg will switch to
     (let* ((constants-unit-system
             (cond ((and unit-system (symbolp unit-system)) unit-system)
                   (unit-system (if (eq constants-unit-system 'SI) 'cgs 'SI))
+                  (constants-unit-system-override constants-unit-system-override)
                   (t constants-unit-system)))
            (all (append constants-user-defined constants-defaults))
            (us (symbol-name constants-unit-system))
