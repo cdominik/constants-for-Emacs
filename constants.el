@@ -1,8 +1,10 @@
-;;; constants.el --- enter definition of constants into source code
-;; Copyright (c) 2003, 2004, 2005, 2011, 2013, 2020 Carsten Dominik
+;;; constants.el --- Enter definition of constants into source code -*- lexical-binding: t; -*-
+
+;; Copyright (c) 2003, 2004, 2005, 2011, 2013, 2020, 2024 Carsten Dominik
 
 ;; Author: Carsten Dominik <carsten.dominik@gmail.com>
-;; Version: 2.8
+;; Version: 2.9
+;; Package-Requires: ((emacs "24.1"))
 ;; Keywords: programming, languages
 ;; URL: https://github.com/cdominik/constants-for-Emacs
 
@@ -271,8 +273,7 @@ Legal values are `cgs' and `SI'."
   '(("kk" . "k") ("bk" . "k")
     ("cc" . "c") ("cl" . "c")
     ("hh" . "h") ("hp" . "h")
-    ("GG" . "Grav") ("gr" . "g")
-    )
+    ("GG" . "Grav") ("gr" . "g"))
   "Alist with additional names for some existing constants.
 Sometime it is better in a program to use different names for
 constants, for exapmle \"cc\" instead of \"c\" for the speed of light,
@@ -437,8 +438,7 @@ This is mainly useful for modes which have several incarnations, like
      (default "4.e0*atan(1.e0)")
      (fortran-mode default) (c-mode default)
      (idlwave-mode default) (matlab-mode default) (octave-mode default)
-     (perl-mode "4*atan2(1,1)")
-     )
+     (perl-mode "4*atan2(1,1)"))
     ("exp1"          ""       "e (base of ln)"         "2.7182818284590452354e0 []" "2.7182818284590452354e0 []")
 
     "Length units"
@@ -667,8 +667,7 @@ This is mainly useful for modes which have several incarnations, like
     ;; Planck units:  These definitions use hbar, not h
     ("lPlanckBar"    "lplb"   "Planck length (hbar)"    "1.61605e-35 [m]"     "1.61605e-33 [cm]")
     ("mPlanckBar"    "mplb"   "Planck mass (hbar)"      "2.17671e-8 [kg]"     "2.17671e-5 [g]")
-    ("tPlanckBar"    "tplb"   "Planck time (hbar)"      "5.39056e-44 [s]"     "5.39056e-44 [s]")
-    )
+    ("tPlanckBar"    "tplb"   "Planck time (hbar)"      "5.39056e-44 [s]"     "5.39056e-44 [s]"))
   "Built-in constants and units.")
 
 (defcustom constants-allow-prefixes t
@@ -738,7 +737,7 @@ The value of this variable must be a function which returns a list
         (add-hook mode-hook
                   (lambda ()
                     (setq constants-language-function
-                          'constants-lisp-like-function))))
+                          '#constants-lisp-like-function))))
       '(scheme-mode-hook emacs-lisp-mode-hook lisp-mode-hook))
 
 ;;;###autoload
@@ -760,7 +759,7 @@ system will be used.  I.e., if your default is `SI', then a prefix arg
 will switch to `cgs' and vice versa.
 
 You can also make \"si\" or \"cgs\" one of the members of the
-comma-separated list in NAMES. This will then set a local
+comma-separated list in NAMES.  This will then set a local
 variable to select that unit system for the current buffer for
 the current editing session.
 
@@ -1021,7 +1020,7 @@ For example \"pi\" would be replaced by \"3.1415926535897932385\"."
         (error "No such constant: %s" (match-string 0))))))
 
 (defun constants-set-unit-system (system)
-  "Set unit system and make sure it persists in this buffer."
+  "Set unit system to SYSTEM and make sure it persists in this buffer."
   (if (equal (downcase system) "cgs")
       (setq constants-unit-system 'cgs
             constants-unit-system-override 'cgs)
@@ -1126,6 +1125,8 @@ and follow it up."
     rtn))
 
 (defun constants-completion-function (string predicate &optional flag)
+  "The completion function for completing constant names.
+STRING, PREDICATE, and FLAG are the usual completion parameters."
   (let (s1 s2 rtn)
     (if (string-match "^\\(.*[*,=]\\)\\([^*,]*\\)$" string)
         (setq s1 (match-string 1 string)
@@ -1135,16 +1136,13 @@ and follow it up."
      ((eq flag nil)
       ;; try completion
       (setq rtn (try-completion s2 constants-ctable))
-      (if (stringp rtn) (concat s1 s2 (substring rtn (length s2))))
-      )
+      (if (stringp rtn) (concat s1 s2 (substring rtn (length s2)))))
      ((eq flag t)
       ;; all-completions
-      (all-completions s2 constants-ctable)
-      )
+      (all-completions s2 constants-ctable))
      ((eq flag 'lambda)
       ;; exact match?
-      (assoc s2 constants-ctable)))
-    ))
+      (assoc s2 constants-ctable)))))
 
 ;;;###autoload
 (defun constants-help (&optional unit-system completing)
@@ -1226,7 +1224,7 @@ The following ambiguities are resolved by ignoring the unit prefix
     (goto-char (point-min))))
 
 (defun constants-test (names)
-  "Test constants-insert for several different modes.
+  "Test `constants-insert' with NAMES for several different modes.
 To try it out, type '(constants-test)' into a buffer, put the cursor after
 the closing parenthesis and execute \\[eval-last-sexp]."
   (let ((modes '(fortran-mode c-mode emacs-lisp-mode lisp-interaction-mode
@@ -1242,4 +1240,3 @@ the closing parenthesis and execute \\[eval-last-sexp]."
 (provide 'constants)
 
 ;;; constants.el ends here
-
