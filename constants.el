@@ -3,7 +3,7 @@
 ;; Copyright (c) 2003, 2004, 2005, 2011, 2013, 2020, 2024 Carsten Dominik
 
 ;; Author: Carsten Dominik <carsten.dominik@gmail.com>
-;; Version: 2.9
+;; Version: 2.10
 ;; Package-Requires: ((emacs "24.1"))
 ;; Keywords: programming, languages
 ;; URL: https://github.com/cdominik/constants-for-Emacs

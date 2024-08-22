@@ -181,6 +181,9 @@ Bruce Ignalis, Dave Pearson, Jacques L'helgoualc'h, Federico Beffa
 
 CHANGES
 -------
+Version 2.10
+- Ready for becoming an ELPA package
+
 Version 2.8
 - Allow the interactive prompt to change the unit system.  That
   change will be stored locally for the current buffer and editing
