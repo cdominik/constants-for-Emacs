@@ -26,9 +26,9 @@
 ;; Boston, MA 02111-1307, USA.
 
 ;;---------------------------------------------------------------------------
-;;
+
 ;;; Commentary:
-;;
+
 ;; When I write small programs to calculate something, I often need
 ;; the values of some physical constants and units.  I could of course
 ;; always link a big module with all those definitions.  But often I
@@ -62,9 +62,9 @@
 ;; MATLAB, OCTAVE, PERL, EMACS-LISP, GP.  You can change these
 ;; defaults and add definitions for other languages with the variable
 ;; `constants-languages'.
-;;
-;; INSTALLATION
-;; ------------
+
+;;;; Installation
+
 ;; Put this file on your load path, byte compile it, and copy the
 ;; following code into your .emacs file.  Change the key definitions,
 ;; variable name aliasing and the unit system to your liking.
@@ -83,9 +83,9 @@
 ;;
 ;;   ;; A default list of constants to insert when none are specified
 ;;   (setq constants-default-list "cc,bk,hp")
-;;
-;; USAGE
-;; -----
+
+;;;; Usage
+
 ;; In a programming mode, call the function and at the prompt enter
 ;; for example
 ;;
@@ -116,9 +116,9 @@
 ;; constant/unit names, this will switch the unit system for the
 ;; burrent buffer and editing session.
 ;;
-;;
-;; CUSTOMIZATION
-;; -------------
+
+;;;; Customization
+
 ;; The following customization variables are available:
 ;;
 ;; constants-unit-system
@@ -144,9 +144,9 @@
 ;;
 ;; constants-prefixes
 ;;   Allowed prefixes for constants and units.
-;;
-;; CONTEXT SENSITIVITY
-;; -------------------
+
+;;;; Context sensitivity
+
 ;; For some languages, it might be usefull to adapt the inserted code
 ;; to context.  For example, in Emacs Lisp mode, the default settings
 ;; insert "(VARIABLE VALUE)" with surrounding parenthesis for a `let'
@@ -172,9 +172,9 @@
 ;;             (lambda ()
 ;;               (setq constants-language-function
 ;;                     'my-constants-elisp-function)))
-;;
-;; BUGS
-;; ----
+
+;;;; Bugs
+
 ;; - Completion does not consider prefixes.  For example, you cannot
 ;;   complete "MGa" to "MGauss" (meaning "Mega-Gauss").  This was not
 ;;   implemented because it would cause too many matches during
@@ -190,26 +190,29 @@
 ;; - I have tried to implement the cgs units correctly, but I have
 ;;   some doubt about the electrical and radiation units.
 ;;   Double-check before blindly using these.
-;;
-;; AUTHOR
-;; ------
+
+;;;; Author
+
 ;; Carsten Dominik <carsten.dominik@gmail.com>
 ;;
 ;; Let me know if you are missing a constant in the default setup, if
 ;; you notice that a value of a constant is not correct, or if you
 ;; would like to see support for another language mode.
-;;
-;; ACKNOWLEDGEMENTS
-;; ----------------
+
+;;;; Acknowledgements
+
 ;; Thanks to Kees Dullemond.  Watching him writing programs has
 ;; inspired this package.
 ;;
 ;; Thanks to the following people for reporting bugs and/or suggesting
 ;; features/constants/languages:
 ;; Bruce Ignalis, Dave Pearson, Jacques L'helgoualc'h, Federico Beffa
+
+;;;; News
+
+;; Version 2.9a
+;; - Working toward readiness for ELPA inclusion
 ;;
-;; CHANGES
-;; -------
 ;; Version 2.8
 ;; - Allow the interactive prompt to change the unit system.  That
 ;;   change will be stored locally for the current buffer and editing
@@ -234,9 +237,9 @@
 ;;   the syntax "varname=const".
 ;; - Support for shell-like modes like idlwave-shell-mode.
 ;; - XEmacs support (fixed a small bug)
-;;
-;; TO DO
-;; -----
+
+;;;; TO DO
+
 ;; - Support more programming languages.
 ;; - Add expression values tcl and others.
 ;; - Add calc mode?
@@ -247,8 +250,6 @@
 ;; - add a command to get info about a certain variable.  Only useful if
 ;;   the variable name really is the constant name.  Not sure if this will
 ;;   be used at all, so until someones asks for it, this will not be done.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
 
 ;;; Code:
 
@@ -260,14 +261,13 @@
 
 (defcustom constants-unit-system 'SI
   "The unit system to be used for the constants.
-Legal values are `cgs' and `SI'."
+Allowed values are `cgs' (centimeter-gram-second) and `SI'."
   :group 'constants
   :type '(choice
 	  (const cgs)
 	  (const SI)))
 
-(defvar constants-unit-system-override nil)
-(make-variable-buffer-local 'constants-unit-system-override)
+(defvar-local constants-unit-system-override nil)
 
 (defcustom constants-rename
   '(("kk" . "k") ("bk" . "k")
@@ -283,9 +283,8 @@ be the name of a user-defined or default constant.  See the variables
 `constants-defaults' and `constants-user-defined'."
   :group 'constants
   :type
-  '(repeat
-    (cons (string "Variable name")
-	  (string "Constant name"))))
+  '(alist :key-type (string :tag "Variable name")
+          :value-type (string :tag "Constant name")))
 
 (defcustom constants-user-defined nil
   "User defined constants for programs.
@@ -697,15 +696,14 @@ See `constants-prefixes' for a list of allowed prefixes."
   :group 'constants
   :type  '(repeat
            (list (character :tag "Prefix char")
-                 (number    :tag "Numeric value")
+                 (string    :tag "Numeric value like 1e-9 as string")
                  (string    :tag "Prefix name"))))
 
-(defvar constants-language-function nil
+(defvar-local constants-language-function nil
   "Function for returning a special format entry.
 The value of this variable must be a function which returns a list
 \((MAJOR-MODE FORMAT EXP-STRING), similar to the entries in
 `constants-languages'.")
-(make-variable-buffer-local 'constants-language-function)
 
 (defvar constants-major-mode)
 
@@ -713,16 +711,14 @@ The value of this variable must be a function which returns a list
 
 (defun constants-is-lisp-like (mode)
   "Is MODE a lisp-like mode?"
-  (save-match-data
-    (string-match "\\(lisp\\|scheme\\)" (symbol-name mode))))
+  (string-match-p "\\(lisp\\|scheme\\)" (symbol-name mode)))
 
 (defun constants-is-set-like ()
   "Is this a setq-like form?"
   (save-excursion
     (condition-case nil
-        (save-match-data
-          (progn (up-list -1)
-                 (or (looking-at "(set[qf!]?\\>") (looking-at "(define\\>"))))
+        (progn (up-list -1)
+               (looking-at-p "\\(?:(set[!fq]\\|(define\\)\\_>"))
       (error nil))))     ; return value nil means use default
 
 ;;;###autoload
@@ -737,7 +733,7 @@ The value of this variable must be a function which returns a list
         (add-hook mode-hook
                   (lambda ()
                     (setq constants-language-function
-                          '#constants-lisp-like-function))))
+                          #'constants-lisp-like-function))))
       '(scheme-mode-hook emacs-lisp-mode-hook lisp-mode-hook))
 
 ;;;###autoload
@@ -768,7 +764,7 @@ case the comma-separated list of names should be given as argument
 NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
 `cgs' may be specified directly.  For example
 
-     (constants-insert 'SI \"hplanck,c,M*pc\")"
+     (constants-insert \\='SI \"hplanck,c,M*pc\")"
   (interactive "P")
   (let* ((constants-unit-system
           (cond ((and unit-system (symbolp unit-system)) unit-system)
@@ -791,8 +787,8 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
                      (assq mode constants-languages)
                      (assq t constants-languages)))
 	 format exp-string unit-system
-         pmatch factor name prefix-name rpl prefix-exp force-prefix process-func
-	 const prefix entry entry1 desc value ins beg linelist line vname)
+         pmatch factor name prefix-name prefix-exp force-prefix process-func
+	 const prefix entry entry1 desc value ins linelist line vname)
         ;; Check for fentry aliasing
     (while (and fentry
                 (symbolp (cdr fentry)))
@@ -891,13 +887,13 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
           (progn
             (while (string-match "%t" ins)
               (setq ins (replace-match
-                         (make-string (max 2 (- 38 (match-beginning 0))) ?\ )
+                         (make-string (max 2 (- 38 (match-beginning 0))) ?\s)
                          t t ins)))
             (funcall process-func ins))
         ;; Here comes the insertion stuff for source code editing modes.
         ;; First make sure we start a new line
         (if (and (string-match
-                  "\\S-" (buffer-substring (point-at-bol) (point-at-eol)))
+                  "\\S-" (buffer-substring (pos-bol) (pos-eol)))
                  (not (constants-is-lisp-like mode)))
             ;; non-empty line, insert after this line
             (progn
@@ -916,12 +912,11 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
                          (or (constants-is-set-like)
                              (null clist)))
                     (save-excursion
-                      (progn
-                        (move-to-column comment-column t)
-                        (insert (match-string 2 line))
-                        ;; insert a newline such that paredit's M-) can mode
-                        ;; the closing parentheses to the next line.
-                        (newline-and-indent)))
+                      (move-to-column comment-column t)
+                      (insert (match-string 2 line))
+                      ;; insert a newline such that paredit's M-) can mode
+                      ;; the closing parentheses to the next line.
+                      (newline-and-indent))
                   (progn
                     (indent-to comment-column)
                     (insert (match-string 2 line)))))
@@ -930,6 +925,7 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
           (if constants-indent-code
               (newline-and-indent)
             (newline)))))))
+
 ;;;###autoload
 (defun constants-get (&optional const message unit-system)
   "Return the value of CONST as defined in the constants package.
@@ -1021,7 +1017,7 @@ For example \"pi\" would be replaced by \"3.1415926535897932385\"."
 
 (defun constants-set-unit-system (system)
   "Set unit system to SYSTEM and make sure it persists in this buffer."
-  (if (equal (downcase system) "cgs")
+  (if (string-equal (downcase system) "cgs")
       (setq constants-unit-system 'cgs
             constants-unit-system-override 'cgs)
     (setq constants-unit-system 'SI
@@ -1046,8 +1042,8 @@ For example \"pi\" would be replaced by \"3.1415926535897932385\"."
         (match-string 1 val)
       val)))
 
-(defun constants-get-unit (entry &optional mode)
-  "Extract the unit string from the ENTRY.  MODE will be ignored."
+(defun constants-get-unit (entry &optional _mode)
+  "Extract the unit string from the ENTRY."
   (let ((val (cond ((eq constants-unit-system 'SI) (nth 3 entry))
                    ((eq constants-unit-system 'cgs) (nth 4 entry))
                    (t nil))))
@@ -1055,10 +1051,10 @@ For example \"pi\" would be replaced by \"3.1415926535897932385\"."
         (match-string 2 val)
       "")))
 
-(defun constants-assoc (key table &optional follow)
+(defun constants-assoc (key table &optional _follow)
   "Case-insensitive assoc on first and second list element, using KEY and TABLE.
-When FOLLOW is non-nil, check if the match is a rename cell
-and follow it up."
+When _FOLLOW is non-nil, check if the match is a rename cell
+and follow it up (not yet implemented, needs to be fixed."
   (catch 'exit
     (let ((key1 (downcase key)) entry)
       (while (setq entry (car table))
@@ -1086,7 +1082,7 @@ and follow it up."
     (unwind-protect
 	(progn
 	  (setq-default completion-ignore-case t)
-	  (apply 'completing-read (car args)
+	  (apply #'completing-read (car args)
                  'constants-completion-function
                  (cdr (cdr args))))
       (setq-default completion-ignore-case old-value))))
@@ -1109,7 +1105,7 @@ and follow it up."
   (let ((all
          (delq nil
                (append
-                (mapcar 'car varnames)
+                (mapcar #'car varnames)
                 (mapcar (lambda(x) (if (consp x) (car x)))
                         constants)
                 (mapcar (lambda(x) (if (consp x) (nth 1 x)))
@@ -1135,11 +1131,11 @@ STRING, PREDICATE, and FLAG are the usual completion parameters."
     (cond
      ((eq flag nil)
       ;; try completion
-      (setq rtn (try-completion s2 constants-ctable))
+      (setq rtn (try-completion s2 constants-ctable predicate))
       (if (stringp rtn) (concat s1 s2 (substring rtn (length s2)))))
      ((eq flag t)
       ;; all-completions
-      (all-completions s2 constants-ctable))
+      (all-completions s2 constants-ctable predicate))
      ((eq flag 'lambda)
       ;; exact match?
       (assoc s2 constants-ctable)))))
@@ -1151,9 +1147,8 @@ The values are for the currently selected unit system.  When called
 with prefix argument UNIT-SYSTEM, the \"other\" unit system will be
 used.  I.e., if your default is `SI', then a prefix arg will switch to
 `cgs' and vice versa.  If COMPLETING is non-lil, use completion."
-
   (interactive "P")
-  (with-output-to-temp-buffer "*Help*"
+  (with-help-window "*Help*"
     (let* ((constants-unit-system
             (cond ((and unit-system (symbolp unit-system)) unit-system)
                   (unit-system (if (eq constants-unit-system 'SI) 'cgs 'SI))
@@ -1171,11 +1166,11 @@ used.  I.e., if your default is `SI', then a prefix arg will switch to
       
       (if constants-user-defined (setq all (cons "User defined entries" all)))
       (princ (format
-"            List of constants: %s
+              "            List of constants: %s
 Description                    Short      Long name       Value [%s]
 -------------------------------------------------------------------------------
 "
-(if completing "Use Shift-<TAB> to scroll" "") us))
+              (if completing "Use Shift-<TAB> to scroll" "") us))
       (while (setq entry (pop all))
         (if (stringp entry)
             (progn
@@ -1188,7 +1183,7 @@ Description                    Short      Long name       Value [%s]
                          (nth 2 entry) (nth 1 entry) (nth 0 entry)
                          (constants-get-value entry mode)
                          (constants-get-unit entry mode))))))
-(let ((all constants-rename) entry)
+    (let ((all constants-rename) entry)
       (princ "\nRenaming\n--------\n")
       (while (setq entry (pop all))
         (princ (format "%-15s refers to `%s'\n" (car entry) (cdr entry)))))
@@ -1199,8 +1194,8 @@ Description                    Short      Long name       Value [%s]
                        (nth 0 entry) (nth 2 entry) (nth 1 entry)))))
     (let* ((all-constants (append constants-user-defined constants-defaults))
            (atable (append constants-rename all-constants))
-           (constants-ctable (constants-make-completion-table constants-rename
-                                                    all-constants))
+           (constants-ctable (constants-make-completion-table
+                              constants-rename all-constants))
            const c1ass c1)
       (princ "
 The following ambiguities are resolved by ignoring the unit prefix
@@ -1225,8 +1220,7 @@ The following ambiguities are resolved by ignoring the unit prefix
 
 (defun constants-test (names)
   "Test `constants-insert' with NAMES for several different modes.
-To try it out, type '(constants-test)' into a buffer, put the cursor after
-the closing parenthesis and execute \\[eval-last-sexp]."
+To try it out, evaluate \\='(constants-test)' using \\[eval-expression]."
   (let ((modes '(fortran-mode c-mode emacs-lisp-mode lisp-interaction-mode
                               idlwave-mode perl-mode cperl-mode))
         mode)
@@ -1238,5 +1232,4 @@ the closing parenthesis and execute \\[eval-last-sexp]."
     (normal-mode)))
 
 (provide 'constants)
-
 ;;; constants.el ends here
