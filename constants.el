@@ -1,9 +1,9 @@
 ;;; constants.el --- Enter definition of constants into source code -*- lexical-binding: t; -*-
 
-;; Copyright (c) 2003, 2004, 2005, 2011, 2013, 2020, 2024 Carsten Dominik
+;; Copyright (c) 2003-2024 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten.dominik@gmail.com>
-;; Version: 2.11
+;; Version: 2.11a
 ;; Package-Requires: ((emacs "24.1"))
 ;; Keywords: programming, languages
 ;; URL: https://github.com/cdominik/constants-for-Emacs
