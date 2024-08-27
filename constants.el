@@ -3,7 +3,7 @@
 ;; Copyright (c) 2003, 2004, 2005, 2011, 2013, 2020, 2024 Carsten Dominik
 
 ;; Author: Carsten Dominik <carsten.dominik@gmail.com>
-;; Version: 2.10
+;; Version: 2.11
 ;; Package-Requires: ((emacs "24.1"))
 ;; Keywords: programming, languages
 ;; URL: https://github.com/cdominik/constants-for-Emacs
@@ -210,8 +210,8 @@
 
 ;;;; News
 
-;; Version 2.9a
-;; - Working toward readiness for ELPA inclusion
+;; Version 2.11
+;; - Ready for inclusion as an ELPA package
 ;;
 ;; Version 2.8
 ;; - Allow the interactive prompt to change the unit system.  That
@@ -781,7 +781,8 @@ NAMES.  UNIT-SYSTEM may be nil to use the default, but also `SI' or
 	 format exp-string unit-system
          pmatch factor name prefix-name prefix-exp force-prefix process-func
 	 const prefix entry entry1 desc value ins linelist line vname)
-        ;; Check for fentry aliasing
+    (ignore name)
+    ;; Check for fentry aliasing
     (while (and fentry
                 (symbolp (cdr fentry)))
       (setq mode (cdr fentry))
