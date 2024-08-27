@@ -262,7 +262,6 @@
 (defcustom constants-unit-system 'SI
   "The unit system to be used for the constants.
 Allowed values are `cgs' (centimeter-gram-second) and `SI'."
-  :group 'constants
   :type '(choice
 	  (const cgs)
 	  (const SI)))
@@ -281,7 +280,6 @@ in order be able to use single letter variables for other purposes.
 Here you can specify a list of new names.  The cdr of each item must
 be the name of a user-defined or default constant.  See the variables
 `constants-defaults' and `constants-user-defined'."
-  :group 'constants
   :type
   '(alist :key-type (string :tag "Variable name")
           :value-type (string :tag "Constant name")))
@@ -309,7 +307,6 @@ SI-value is a symbol like `fortran-mode', the expressions for the
 corresponding mode will be looked up.  If the SI-value is the empty
 string or the symbol `default', settings for a virtual mode `default'
 are used.  Again, `constants-defaults' contains examples."
-  :group 'constants
   :type '(repeat
 	  (list
 	   (string :tag "Long name")
@@ -326,7 +323,6 @@ are used.  Again, `constants-defaults' contains examples."
 
 (defcustom constants-default-list "hp,kk,cc,AU,Msun,Lsun,Grav"
   "Default constants to insert if none are specified."
-  :group 'constants
   :type 'string)
 
 (defcustom constants-languages
@@ -384,7 +380,6 @@ In this case, the language settings are copied from other-major-mode.
 This is mainly useful for modes which have several incarnations, like
 `emacs-lisp-mode' and `lisp-interaction-mode', or `perl-mode' and
 `cperl-mode'."
-  :group 'constants
   :type
   '(repeat
     (choice
@@ -401,7 +396,6 @@ This is mainly useful for modes which have several incarnations, like
 
 (defcustom constants-indent-code t
   "Non-nil means, indent the newly inserted code according to mode."
-  :group 'constants
   :type 'boolean)
 
 (defconst constants-defaults
@@ -672,7 +666,6 @@ This is mainly useful for modes which have several incarnations, like
 (defcustom constants-allow-prefixes t
   "Non-nil means, non-matching names are checked to have unit prefixes.
 See `constants-prefixes' for a list of allowed prefixes."
-  :group 'constants
   :type 'boolean)
 
 (defcustom constants-prefixes
@@ -693,7 +686,6 @@ See `constants-prefixes' for a list of allowed prefixes."
     (?f "1e-15" "Femto")
     (?a "1e-18" "Atto"))
   "Allowed prefixes for constants and units."
-  :group 'constants
   :type  '(repeat
            (list (character :tag "Prefix char")
                  (string    :tag "Numeric value like 1e-9 as string")
